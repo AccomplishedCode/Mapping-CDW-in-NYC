@@ -3,3 +3,4 @@ pydeck==0.6.2
 streamlit==0.85.1
 pandas==1.2.5
 numpy==1.19.5
+st-annotated-text==2.0.0
