@@ -134,7 +134,7 @@ if s_chosen:
 
         if stat_view:
 
-            st.sidebar.subheader('We provide three different visualizations for this data')
+            st.sidebar.subheader('We provide two different visualizations for this data')
             st.sidebar.write('Please choose the graph types below: ')
 
             monthly= st.sidebar.checkbox('Monthly CDW breakdown')
