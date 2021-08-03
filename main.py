@@ -2,14 +2,28 @@ import streamlit as st
 import pydeck as pdk
 import pandas as pd
 import numpy as np
+import base64 
+from maps import *
+from utils import *
+from annotated_text import annotated_text
 
 #Setting page to wide config mode
 st.set_page_config(layout='wide')
 st.title('Mapping Construction+Demolition Waste Flows for Recovered C+DW Use in NYC’s Capital Program')
 st.write("Welcome! This is a tool created by a team of MS students at NYU Center for Urban Sciences & Progress to visualize CDW Waste in NYC. The dataset used for these visualizations was extracted from handwritten forms provided by NYS DEP, and converted into machine readable format by the team over a period of 3 months.")
-st.write("The dataset used is easily explored through the sidepane. For now, we have two views, tabular and map based. Please choose the checkbox for your usage.")
-st.write("And it's that simple! Are you ready to see this data in action?")
+st.write("The dataset used is easily explored through the sidepane.Please choose the desired view checkbox to display the visualization, and uncheck to clear the view.")
+st.subheader("A Few Pointers About the Data and the Maps")
+with st.beta_expander("See important disclaimers about our maps and data"):
+    st.write(
+        """
+        - This data has been aggregated by humans from handwritten, scanned PDF forms. 
+        - Due to the nature of how forms were filled, some data might have been mis-categorized. However, we've confirmed our aggregation assumptions with a panel of CDW experts from the City as well as the State of NY. 
+        - The coordinate locations for transfer facilities and landfills were extracted using a mix of Google Maps API as well as other open source API's. Due to facility names being fluid due to change of ownership/new registrations, we've confirmed that the names listed on this dataset are the latest available as of April, 2021.
+        - This tool is just a visualization of the data we were able to gather. This does not aim to inculpate or put blame on any particular facility or region for their activities.  
+        """
+    )
 
+#Selecting whether or not to display sidebar config controls
 
 def first_decision():
     sidebar_chosen= st.checkbox("Yes!")
@@ -19,11 +33,15 @@ def first_decision():
 s_chosen, desc_chosen= first_decision()
 data_dir= 'data/' #Input own directory if needed
 #Loading the data
-datafile= 'cleaned_transfers.csv'
+datafile= 'dataset_snake.csv'
 df= pd.read_csv(data_dir + datafile)
+df= df.drop(columns=['Unnamed: 0'], axis=1)
+#Separating into Transfers and Landfills
+
+df_transfers= df.loc[df['Facility Type']=='Transfer Facility']
+df_landfills= df.loc[df['Facility Type']=='Landfill']
 
 #Defining filter functions and map functions
-
 def filter_data(dataframe, year, material):
     df1= dataframe.loc[dataframe['Year']==year]
     df1= df1.loc[df1['Material']==material]
@@ -32,129 +50,114 @@ def filter_data(dataframe, year, material):
 
     return df_in, df_out
 
-#Defining mapping functions, for individual directions & both incoming and outgoing directions
-#First, we define colors for our arcs
-
-GREEN_RGB = [0, 255, 0, 90]
-RED_RGB = [255, 100, 0, 80]
-BLUE_RGB= [0, 146, 255, 100]
-VIOLET_RGB= [220, 0, 255, 90]
-
-#We also need to define the initial viewstate for our map, to set the camera position when the user first sees the map
-view_state = pdk.ViewState(latitude=40.7128, longitude=-74.0060, zoom=7, bearing=15, pitch=45, controller=True)
-
-#Now onto the map functions 
-# Using pydeck integration here to easily visualize our arcs from origin to destination 
-    
-def map(dataframe):
-    st.write(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=view_state,
-    layers=[
-        pdk.Layer(
-            "ArcLayer",
-            data=dataframe,
-            get_width="Tonnage/10000",
-            get_source_position=["SA_lng", "SA_lat"],
-            get_target_position=["f_lng", "f_lat"],
-            get_tilt=15,
-            width_min_pixels= 5,
-            get_source_color=RED_RGB,
-            get_target_color=BLUE_RGB,
-            pickable=True,
-            opacity=0.9,
-            auto_highlight=True,
-        ),
-    ],
-    tooltip= {
-        "text":"Material : {Material}\n Coming from :{SA_address}\n Going to:{facility_name}\n Weight in tons: {Tonnage}\n Destiny: {Destiny}"
-    }
-))
-
-def dual_map(dataframe_in, dataframe_out):
-    st.write(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=view_state,
-    layers=[
-        pdk.Layer(
-            "ArcLayer",
-            data=dataframe_in,
-            get_width="Tonnage/10000",
-            get_source_position=["SA_lng", "SA_lat"],
-            get_target_position=["f_lng", "f_lat"],
-            get_tilt=15,
-            width_min_pixels= 5,
-            get_source_color=RED_RGB,
-            get_target_color=BLUE_RGB,
-            pickable=True,
-            opacity=0.9,
-            auto_highlight=True,
-        ),
-        pdk.Layer(
-            "ArcLayer",
-            data=dataframe_out,
-            get_width="Tonnage/10000",
-            get_source_position=["SA_lng", "SA_lat"],
-            get_target_position=["f_lng", "f_lat"],
-            get_tilt=15,
-            width_min_pixels= 5,
-            get_source_color=VIOLET_RGB,
-            get_target_color=GREEN_RGB,
-            pickable=True,
-            opacity=0.9,
-            auto_highlight=True,
-        ),
-    ],
-    tooltip= {
-        "text":"Material : {Material}\n Coming from :{SA_address}\n Going to:{facility_name}\n Weight in tons: {Tonnage}\n Destiny: {Destiny}"
-    }
-))
-
 
 #Defining sidebar panel
 if s_chosen:
-    st.sidebar.subheader('Which CDW dataset would you like to explore?')
-    data_chosen= st.sidebar.checkbox('Transfer Facilities')
+    st.sidebar.subheader('Please check the box on the dataset you wish to visualize')
+    data_chosen= st.sidebar.radio('We currently provide exploration of only one type', ['Transfer Facility', 'Landfills'])
+        
     if data_chosen:
-        st.sidebar.subheader("How would you like to explore the  dataset?")
-        tab_view= st.sidebar.checkbox('Tabular View') #Defining views for the page to display
-        map_view= st.sidebar.checkbox('Map View')
-        county_view= st.sidebar.checkbox('County Level Statistics (Coming soon, in progress!') #Exploratory dataframe analysis to be implemented
 
+        st.sidebar.subheader('How would you like to explore the dataset?')
+
+        tab_view= st.sidebar.checkbox('Tabular View') #Defining views for the page to display
+        map_view= st.sidebar.checkbox('Map View') #Bool variable for Mapping view
+        stat_view= st.sidebar.checkbox('Statistical Visualizations') #Exploratory dataframe analysis to be implemented
+
+        st.sidebar.subheader('Please choose year of interest')
+        year_chosen = st.sidebar.radio(
+                    'Please select year of interest:',
+                    (2019, 2020))
         if tab_view:
+            #Allow data downloading
+            csv = df.to_csv(index=False)
+            b64 = base64.b64encode(csv.encode()).decode()  # some strings
+            linko= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download csv file</a>'
+            st.markdown(linko, unsafe_allow_html=True)
+
+            if data_chosen=='Transfer Facility':
                 st.subheader('Dataframe of the Transfer facilities dataset')
-                st.write(df) #Currently Transfer Facilities but will change when Landfill data is added.
+                st.write(df_transfers)
+
+
+            if data_chosen=='Landfills':
+                st.subheader('Dataframe of the Landfills dataset')
+                st.write(df_landfills)
+
 
         if map_view:
-            year_chosen = st.sidebar.selectbox(
-                    'Please select year of interest:',
-                    (2019, 2020)
-                )
-
-            material_chosen= st.sidebar.selectbox(
-                'Please choose the material of interest:',
-                ('Concrete','Masonry','Aspahlt and Road Material', 'Sand', 'Bulk Metal (from C&D Debris)','Construction & Demolition (C&D) Debris','Soil','Fill','RCA','Scrap Metal','General C&D Debris') #to be updated
-            )
 
             direction_chosen= st.sidebar.selectbox(
-                'Which transfer facility flow would you like to visualize?',
+                'Please choose the type of CDW flows to visualize:',
                 ('Incoming', 'Outgoing', 'Both')
             )
-            st.subheader('Map of Incoming Construction & Demolition Waste to Transfer Facilities')
-            st.write("This map if fully interactive. You can zoom in and out, pan by holding the right mouse click and get information about each trip by hovering over the arc.")
-            df_in, df_out= filter_data(df, year_chosen, material_chosen)
-            if direction_chosen=='Incoming':
-                map(df_in)
-            elif direction_chosen=='Outgoing':
-                map(df_out)
-            elif direction_chosen=='Both':
-                dual_map(df_in, df_out)
+            
 
+            st.write("This map is fully interactive. You can zoom in and out, pan by holding the right mouse click and get information about each trip by hovering over the arc.")
+
+
+            if data_chosen=='Transfer Facility':
+                st.subheader('Map of Incoming Construction & Demolition Waste to Transfer Facilities')
+                annotated_text(
+                    "Legend:",
+                    ("Incoming", "To Transfer Facility", "#ee6123"),
+                    ("Outgoing", "From Transfer Facility", "#047634" )
+                )
+                material_chosen= st.sidebar.selectbox(
+                    'Please choose the material of interest:',
+                    (df_transfers['Material'].unique()))
+                
+                df_in, df_out= filter_data(df_transfers, year_chosen, material_chosen)
+
+                if direction_chosen=='Incoming':
+                    map(df_in,COPPER_RGB)
+                elif direction_chosen=='Outgoing':
+                    map(df_out, DARK_GREEN_RGB)
+                elif direction_chosen=='Both':
+                    dual_map(df_in, df_out, COPPER_RGB, DARK_GREEN_RGB)
+
+            elif data_chosen=='Landfills':
+                st.subheader('Map of Incoming Construction & Demolition Waste to Landfills')
+                annotated_text(
+                    "Legend:",
+                    ("Incoming",),
+                    ("RECYCLED","FROM LANDFILL", "#f50029" )
+                )
+                material_chosen= st.sidebar.selectbox(
+                'Please choose the material of interest:',
+                (df_landfills['Material'].dropna().unique()))
+
+                df_landfill_filtered= df_landfills.loc[df_landfills['Material']==material_chosen]
+                map_landfill(df_landfill_filtered)
+                st.subheader("Map of Materials recycled onsite Landfills")
+                column_map(df_landfill_filtered)
+
+        if stat_view:
+
+            st.sidebar.subheader('We provide three different visualizations for this data')
+            st.sidebar.write('Please choose the graph types below: ')
+
+            monthly= st.sidebar.checkbox('Monthly CDW breakdown')
+            sankey= st.sidebar.checkbox('Regional Material Flows')
+
+            if monthly:
+                if data_chosen: 
+                    st.subheader('Monthly Breakdown of CDW')
+                    st.write('The graph is fully interactive, please feel free to select/unselect relevant materials')
+                    st.plotly_chart(timeline_2020(df_monthly, material_list, region_list),  use_container_width=True)
+
+            if sankey: 
+                region_chosen= st.sidebar.selectbox('Please choose the region of interest:', [1,2,8])
+                st.subheader('Regional Flow Graph of CDW For Transfer Facilities')
+                st.plotly_chart(sankey_destiny_2(df_transfers, region_chosen,year_chosen,data_chosen ),  use_container_width=True)   
+                #sankey_destiny_2(df, region_chosen,year_chosen,data_chosen).show()
+                
+        
 if desc_chosen:
-    st.write("Thanks for clicking to learn more about our project. We believe that reuse of materials in the construction industry is critical in reducing Greenhouse Gas Emmissions, and it's important that there exist a secondary marketplace for recovered CDW materials. ")
-    st.write("To read our Capstone Project Presentation, please click on the link below:")
+    st.subheader(" A Bit About This Project")
+    st.write("Thanks for clicking to learn more about our project! We believe that reuse of materials in the construction industry is critical in reducing Greenhouse Gas Emmissions, and it's important that there exist a way to track and map these material flows in order to create a market for secondary use. ")
+    st.write("To read more about our Capstone Project, please click on the link below:")
     st.write("https://nyu0-my.sharepoint.com/:w:/g/personal/dw2759_nyu_edu/EQCu4Irca2JEozzEmqMOl5cBdDZYhJOxWSFROycdTdQR1Q?rtime=55Ubf7tH2Ug", unsafe_allow_html=True)
-
 
 
 
