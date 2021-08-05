@@ -5,15 +5,15 @@ import plotly.graph_objs as go
 
 
 material_list = ['Concrete', 'Masonry', 'Asphalt and Road Material', 'Sand', 'Soil', 'Yard Waste', 'General C&D Debris', 'Fill', 'Wood', 'Metals', 
-                 'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Asphalt Roofing Shingles',
+                 'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Glass',
                  'Auto Fluff','Asbestos', 'Ash & Cement Alternatives',]
 
 region_list = [1,2,3,4,5,6,7,8,9]
 
 df_monthly= pd.read_csv('data/monthly_CDW.csv')
 
-def timeline_2020(df,mat_list, regions):
-  df = df[df.Year == 2020][df.Material.isin(mat_list)][df.Region.isin(regions)]\
+def timeline_2020(df,mat_list, regions,year):
+  df = df[df.Year == year][df.Material.isin(mat_list)][df.Region.isin(regions)]\
                                   [['Material','Region','January (tons)', 'February (tons)', 'March (tons)', 'April (tons)', 'May (tons)', 'June (tons)',
                                     'July (tons)', 'August (tons)', 'September (tons)', 'October (tons)', 'November (tons)', 'December (tons)']]\
                                     .groupby(['Material']).sum().drop(columns=['Region']).reset_index()
@@ -73,7 +73,7 @@ def sankey_destiny(df, region, year, type_):
                           .drop(columns = ['Facility Region'])
 
   list_mats= ['Concrete', 'Masonry', 'Asphalt and Road Material', 'Sand', 'Soil', 'Yard Waste', 'General C&D Debris', 'Fill', 'Wood', 'Metals',
-              'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Asphalt Roofing Shingles',
+              'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Glass',
               'Auto Fluff','Asbestos', 'Ash & Cement Alternatives', 'Other']
   colors_links= ['#E59866', '#BA4A00', '#9B59B6','#8E44AD', '#2980B9','#3498DB', '#BDC3C7', '#45B39D','#52BE80', '#008080','#0000FF', '#000080', '#FF00FF',
                 '#800080', '#9FE2BF', '#6495ED','#CCCCFF', '#FFBF00','#FF7F50', '#F39C12', '#884EA0']
@@ -117,7 +117,7 @@ def sankey_destiny_2(df, region, year, type_):
                           .drop(columns = ['facility_region'])
 
   list_mats= ['Concrete', 'Masonry', 'Asphalt and Road Material', 'Sand', 'Soil', 'Yard Waste', 'General C&D Debris', 'Fill', 'Wood', 'Metals',
-              'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Asphalt Roofing Shingles',
+              'Old Corrugated Containers', 'Rock, Stone, and Gravel','Asphalt Roofing Shingles', 'Residue', 'Gypsum','Tires', 'Glass',
               'Auto Fluff','Asbestos', 'Ash & Cement Alternatives', 'Other']
   colors_links= ['#E59866', '#BA4A00', '#9B59B6','#8E44AD', '#2980B9','#3498DB', '#BDC3C7', '#45B39D','#52BE80', '#008080','#0000FF', '#000080', '#FF00FF',
                 '#800080', '#9FE2BF', '#6495ED','#CCCCFF', '#FFBF00','#FF7F50', '#F39C12', '#884EA0']

@@ -7,35 +7,51 @@ from maps import *
 from utils import *
 from annotated_text import annotated_text
 
+#Loading some dataset for beta expander
+categories= pd.read_csv('data/categories.csv')
+regions= pd.read_csv('data/regions.csv')
+
 #Setting page to wide config mode
 st.set_page_config(layout='wide')
 st.title('Mapping Construction+Demolition Waste Flows for Recovered C+DW Use in NYC’s Capital Program')
 st.write("Welcome! This is a tool created by a team of MS students at NYU Center for Urban Sciences & Progress to visualize CDW Waste in NYC. The dataset used for these visualizations was extracted from handwritten forms provided by NYS DEP, and converted into machine readable format by the team over a period of 3 months.")
 st.write("The dataset used is easily explored through the sidepane.Please choose the desired view checkbox to display the visualization, and uncheck to clear the view.")
-st.subheader("A Few Pointers About the Data and the Maps")
-with st.beta_expander("See important disclaimers about our maps and data"):
-    st.write(
-        """
-        - This data has been aggregated by humans from handwritten, scanned PDF forms. 
-        - Due to the nature of how forms were filled, some data might have been mis-categorized. However, we've confirmed our aggregation assumptions with a panel of CDW experts from the City as well as the State of NY. 
-        - The coordinate locations for transfer facilities and landfills were extracted using a mix of Google Maps API as well as other open source API's. Due to facility names being fluid due to change of ownership/new registrations, we've confirmed that the names listed on this dataset are the latest available as of April, 2021.
-        - This tool is just a visualization of the data we were able to gather. This does not aim to inculpate or put blame on any particular facility or region for their activities.  
-        """
-    )
-
-#Selecting whether or not to display sidebar config controls
-
 def first_decision():
     sidebar_chosen= st.checkbox("Yes!")
     desc_chosen= st.checkbox("Not yet, I want to learn more about this project.")
     return sidebar_chosen,desc_chosen
 
 s_chosen, desc_chosen= first_decision()
+
+#Expander for disclaimers
+st.subheader("A Few Pointers About the Data and the Maps")
+with st.beta_expander("See important disclaimers about our maps and data"):
+    st.write(
+        """
+        - This data has been aggregated by humans from handwritten, scanned PDF forms. 
+        - The coordinate locations for transfer facilities and landfills were extracted using a mix of Google Maps API as well as other open source API's. Due to facility names being fluid due to change of ownership/new registrations, we've confirmed that the names listed on this dataset are the latest available as of April, 2021.
+        - We rely on the level of spatial granularity that is provided in the reporting forms. In the cases where the “Service Area” refers to a state or county, our map portrays that where the respective end of the arc falls at the center of the town/county as per the NYS Municipal boundary map. In some cases (in and around Suffolk County, for example) that center could coincidentally lie in water. Please note the “Coming from/Going to” details as you hover over the arcs. 
+        - This tool is just a visualization of the data we were able to gather. This does not aim to inculpate or put blame on any particular facility or region for their activities.  
+        - The following table defines the final 21 material types by categorizing the numerous different types of reported materials: 
+        """
+    )
+    st.dataframe(categories)
+    st.write("""
+        - The following table shows the available data in terms of facility type, region and year: 
+        """)
+    st.dataframe(regions)
+    st.image('data/regions.jpg')
+
+#Selecting whether or not to display sidebar config controls
+
+
 data_dir= 'data/' #Input own directory if needed
 #Loading the data
 datafile= 'dataset_snake.csv'
 df= pd.read_csv(data_dir + datafile)
 df= df.drop(columns=['Unnamed: 0'], axis=1)
+
+df_capacities= pd.read_csv('data/LF_caps.csv')
 #Separating into Transfers and Landfills
 
 df_transfers= df.loc[df['Facility Type']=='Transfer Facility']
@@ -72,8 +88,20 @@ if s_chosen:
             #Allow data downloading
             csv = df.to_csv(index=False)
             b64 = base64.b64encode(csv.encode()).decode()  # some strings
-            linko= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download csv file</a>'
+            linko= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download Dataset file</a>'
             st.markdown(linko, unsafe_allow_html=True)
+
+            csv_monthly= df_monthly.to_csv(index=False)
+            b64 = base64.b64encode(csv_monthly.encode()).decode()  # some strings
+            linko_monthly= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download Monthly Breakdown file</a>'
+            st.markdown(linko_monthly, unsafe_allow_html=True)
+
+            
+            csv_capacities= df_capacities.to_csv(index=False)
+            b64 = base64.b64encode(csv_capacities.encode()).decode()  # some strings
+            linko_capacities= f'<a href="data:file/csv;base64,{b64}" download="myfilename.csv">Download Remaining Landfill Capacities file</a>'
+            st.markdown(linko_capacities, unsafe_allow_html=True)
+
 
             if data_chosen=='Transfer Facility':
                 st.subheader('Dataframe of the Transfer facilities dataset')
@@ -143,8 +171,12 @@ if s_chosen:
             if monthly:
                 if data_chosen: 
                     st.subheader('Monthly Breakdown of CDW')
-                    st.write('The graph is fully interactive, please feel free to select/unselect relevant materials')
-                    st.plotly_chart(timeline_2020(df_monthly, material_list, region_list),  use_container_width=True)
+                    st.write('The graph is fully interactive, please feel free to select/deselect relevant materials')
+                    st.plotly_chart(timeline_2020(df_monthly, material_list, region_list, year_chosen),  use_container_width=True)
+                    if year_chosen==2020:
+                        st.subheader('Monthly Breakdown of Other Waste')
+                        st.write('Please check disclaimer section for all materials included under the category: Other')
+                        st.plotly_chart(timeline_2020(df_monthly,['Other'], region_list, year_chosen), use_container_width=True)
 
             if sankey: 
                 region_chosen= st.sidebar.selectbox('Please choose the region of interest:', [1,2,8])
@@ -156,8 +188,8 @@ if s_chosen:
 if desc_chosen:
     st.subheader(" A Bit About This Project")
     st.write("Thanks for clicking to learn more about our project! We believe that reuse of materials in the construction industry is critical in reducing Greenhouse Gas Emmissions, and it's important that there exist a way to track and map these material flows in order to create a market for secondary use. ")
-    st.write("To read more about our Capstone Project, please click on the link below:")
-    st.write("https://nyu0-my.sharepoint.com/:w:/g/personal/dw2759_nyu_edu/EQCu4Irca2JEozzEmqMOl5cBdDZYhJOxWSFROycdTdQR1Q?rtime=55Ubf7tH2Ug", unsafe_allow_html=True)
+    st.write("To read more about our Capstone Project and check out the code, please click on the link below:")
+    st.write("https://github.com/AccomplishedCode/Mapping-CDW-in-NYC", unsafe_allow_html=True)
 
 
 
