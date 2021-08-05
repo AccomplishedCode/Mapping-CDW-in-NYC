@@ -47,7 +47,7 @@ with st.beta_expander("See important disclaimers about our maps and data"):
 
 data_dir= 'data/' #Input own directory if needed
 #Loading the data
-datafile= 'dataset_snake.csv'
+datafile= 'dataset_snake_v2.csv'
 df= pd.read_csv(data_dir + datafile)
 df= df.drop(columns=['Unnamed: 0'], axis=1)
 
