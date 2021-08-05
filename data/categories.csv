@@ -1,0 +1,22 @@
+﻿MATERIAL_NAME,REPORTED_MATERIAL_ALIASES
+Concrete ,"Concrete', 'Concrete/Stone', 'Aggregate + Concrete', 'Aggregate/Concrete', 'Concrete/Dirt', 'Concrete Blend', 'RCA', 'Recycled Concrete Aggregate' "
+Asphalt & Road Material ,"Asphalt and Road Material', 'Asphalt', 'Asphalt Millings', 'Asphalt Pavement', 'Road Material', 'Road Building Material', 'Street Excavation Material', 'Concrete-Asphalt Mix', 'Mixed Broken Asphalt', 'RAP', 'Rap' "
+Metals ,"Metals', 'Nonferrous Metal', 'Aluminium', 'Bulk Metal', 'Bulk Metal (from C&D Debris)', 'Bulk Metal (from CD debris)', 'Bullk Metal', 'Bullk Metal (from C&D Debris)','Bulk Metal (from MSW)', 'Bulk Metal/Appliances', 'Other Metal', 'Metal', 'Mixed Metal', 'Electronics', 'Scrap Metal', 'Wire' "
+Masonry ,"Masonry', 'Brick', 'Other Masonry Materials', 'Other Masonery Materials' "
+General C&D Debris ,"General C&D Debris', 'Construction & Demolition Debris - out of county', 'Construction & Demolition (C&D) Debris', 'Construction and Demolition Debris', 'Construction & Demolition Debris', 'Mixed Loads', 'Mixed Debris', 'Mixed Load', 'Unprocessed Material', 'Unprocessed Mix', 'Brick, concrete','C&D Debris', 'Mixed - no Asphalt', 'Mixed Concrete + Brick', 'C&D Blend', 'Processed C&D','Mixed Concrete and Brick','Mixed Mixture of Asphalt Brick + Dirt' "
+"Rock, Stone & Gravel ","Rock, Stone, and Gravel','Rock', 'Rock/Stone', 'Stone', 'Gravel', 'Blend/Stone', 'Gravel/Rock/Stone', 'Rock and Dirt','Blend/Stone', 'Drainage Stone','Clay', 'Rock' "
+Soil ,"Soil', 'Topsoil' "
+Wood ,"Wood', 'Unadulterated Wood', 'Waste Wood', 'Wood', 'Woodchips', 'Wood/Wood Chips', 'Pallet Wood Chips', 'Unadulterated Wood (chips)'"
+Old Corrugated Containers ,"Old Corrugated Containers', 'OCC', 'Cardboard', 'Commingled Paper (all grades)','Corrugated Containers', 'Commingled Containers', 'Commingled Paper', 'Corrugated Cardboard', 'Confidential Paper', 'Mixed Paper', 'Mixed Containers', 'Paper Mill Sludge', 'Short Paper Fiber','Paper/Cardboard' "
+Fill ,"Fill', 'Bulk', 'ADCM', 'Restricted - Use Fill', 'Restricted-Use Fill', 'Processed Fill', 'Screened Fill', 'Screening', 'Mixed Fill', 'Concrete, Brick, Dirt', 'General Fill', 'General', 'Excavated Mix: rock, conncrete, asphalt', 'Mixed Fill', 'Limited-Use Fill', 'Screen Fill 1/4""', 'Structural Fill', 'Unprocessed Fill', 'Soil/Sand', 'Concrete, Stone, and Screening','50% Dirt', 'Bentonite', 'Clay', 'Excavated Material', 'Clean Fill', 'Contaminated Soil','Dirt','Dirt/Concrete/Mixed Agg', 'Trench Fill', 'Blasting Sand as AOC', 'Bulk', 'Construction & Demolition (Cover)', 'Mixed Concrete, Asphalt, Dirt + Brick', 'Mixed Concrete, Brick, Dirt', 'DPW/Animal Shelter ADCM', 'GNF Cover ADCM', 'Special Waste (Cover)', 'Special Waste/Sludge/Other (Cover)', 'Grit', 'In house AOC blend', 'Industrial Waste (Alum AOC)', 'Petroleum Contaminated Soil', 'Processed C&D mix with sludge', 'Sandblast Grit', 'Solidification Bulking Agent (SBA)', 'Special Waste/Sludge/Other (Cover)', 'Coal, Sand, Rock','Petroleum Contaminated Soil - out-of-county' "
+Asphalt Roofing Shingles ,"Asphalt Roofing Shingles', 'Roofing', 'Asphalt Roof Shingles' "
+Sand ,"‘Sand', 'Sand (Bankrun)', 'Foundry Sand '"
+Residue,Residue'
+Tires,"Tires', 'Waste Tire-Derived Aggregate', 'Waste Tires'"
+Other ,"Other', 'Commingled Containers (metal, glass, plastic)', 'Plastic', 'Batteries & Bulbs', 'Brown Stock', 'Cortland County Recycling Variance', 'Treated Regulated Medical Waste', Punch Outs', 'Incinerated Sewer Sludge', 'MSW', 'MSW Ash','Miscellaneous','Mixed Municipal Solid Waste', 'Other', 'Sewage Treatment Plant Sludge', 'Single Stream', 'Textiles', 'Water Jet Garnet', 'Industrial Waste', 'Mixed Rigid Plastic', 'Mixed Municipal Solid Waste - out-of-county','Sewage Treatment Plant Sludge - out-of-county' "
+Gypsum,Gypsum
+Yard Waste ,"Yard Waste', 'Brush', 'Brush, branches, stumps, logs, wood chips','Bush, Branches, Trees, Stumps', 'Leaves', 'Yard Waste', 'Tree Debris', 'Brush, Branches, Trees & Stumps', 'Bush, Branches, Trees & Stumps', 'Compost', 'WWTP to compost', 'Land Clearing Debris', 'Landfill - land clearing debris','Mulch','Colored Mulch','Stumps & Branches', 'Compost & MRF Residuals' "
+Asbestos ,Asbestos '
+Ash & Cement Alternatives ,"Ash & Cement Alternatives', 'Ash','Ash (MSW Energy Recovery)', 'Wood Ash', 'Industrial Ash', 'Industrial Waste (Alum Sludge Powder) '"
+Glass,Glass'
+Auto Fluff,"Auto Fluff', 'Auto Fluff (Cover)', 'Shredder Fluff','Car Fluff' "
