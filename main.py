@@ -167,7 +167,7 @@ if s_chosen:
                 else:
                     region_chosen= st.sidebar.selectbox('Please choose the region of interest:', (df_landfills['facility_region'].unique()))
                     st.subheader('Regional Flow Graph of CDW For Landfills')
-                    st.plotly_chart(sankey_destiny_2(df_landfills, region_chosen,year_chosen,'Landfill' ),  use_container_width=True)
+                    st.plotly_chart(sankey_destiny_2(df_landfills, region_chosen,2020,'Landfill' ),  use_container_width=True)
                 
         
 if desc_chosen:
