@@ -23,25 +23,6 @@ def first_decision():
 
 s_chosen, desc_chosen= first_decision()
 
-#Expander for disclaimers
-st.subheader("A Few Pointers About the Data and the Maps")
-with st.beta_expander("See important disclaimers about our maps and data"):
-    st.write(
-        """
-        - This data has been aggregated by humans from handwritten, scanned PDF forms. 
-        - The coordinate locations for transfer facilities and landfills were extracted using a mix of Google Maps API as well as other open source API's. Due to facility names being fluid due to change of ownership/new registrations, we've confirmed that the names listed on this dataset are the latest available as of April, 2021.
-        - We rely on the level of spatial granularity that is provided in the reporting forms. In the cases where the “Service Area” refers to a state or county, our map portrays that where the respective end of the arc falls at the center of the town/county as per the NYS Municipal boundary map. In some cases (in and around Suffolk County, for example) that center could coincidentally lie in water. Please note the “Coming from/Going to” details as you hover over the arcs. 
-        - This tool is just a visualization of the data we were able to gather. This does not aim to inculpate or put blame on any particular facility or region for their activities.  
-        - The following table defines the final 21 material types by categorizing the numerous different types of reported materials: 
-        """
-    )
-    st.dataframe(categories)
-    st.write("""
-        - The following table shows the available data in terms of facility type, region and year: 
-        """)
-    st.dataframe(regions)
-    st.image('data/regions.jpg')
-
 #Selecting whether or not to display sidebar config controls
 
 
@@ -178,11 +159,15 @@ if s_chosen:
                         st.write('Please check disclaimer section for all materials included under the category: Other')
                         st.plotly_chart(timeline_2020(df_monthly,['Other'], region_list, year_chosen), use_container_width=True)
 
-            if sankey: 
-                region_chosen= st.sidebar.selectbox('Please choose the region of interest:', [1,2,8])
-                st.subheader('Regional Flow Graph of CDW For Transfer Facilities')
-                st.plotly_chart(sankey_destiny_2(df_transfers, region_chosen,year_chosen,data_chosen ),  use_container_width=True)   
-                #sankey_destiny_2(df, region_chosen,year_chosen,data_chosen).show()
+            if sankey:
+                if data_chosen=='Transfer Facility':
+                    region_chosen= st.sidebar.selectbox('Please choose the region of interest:', [1,2,8])
+                    st.subheader('Regional Flow Graph of CDW For Transfer Facilities')
+                    st.plotly_chart(sankey_destiny_2(df_transfers, region_chosen,year_chosen,data_chosen ),  use_container_width=True)   
+                else:
+                    region_chosen= st.sidebar.selectbox('Please choose the region of interest:', (df_landfills['facility_region'].unique()))
+                    st.subheader('Regional Flow Graph of CDW For Landfills')
+                    st.plotly_chart(sankey_destiny_2(df_landfills, region_chosen,year_chosen,'Landfill' ),  use_container_width=True)
                 
         
 if desc_chosen:
@@ -191,7 +176,25 @@ if desc_chosen:
     st.write("To read more about our Capstone Project and check out the code, please click on the link below:")
     st.write("https://github.com/AccomplishedCode/Mapping-CDW-in-NYC", unsafe_allow_html=True)
 
-
+#Expander for disclaimers
+st.subheader("A Few Pointers About the Data and the Maps")
+with st.beta_expander("See important disclaimers about our maps and data"):
+    st.write(
+        """
+        - This data has been aggregated by humans from handwritten, scanned PDF forms. 
+        - The coordinate locations for transfer facilities and landfills were extracted using a mix of Google Maps API as well as other open source API's. Due to facility names being fluid due to change of ownership/new registrations, we've confirmed that the names listed on this dataset are the latest available as of April, 2021.
+        - We rely on the level of spatial granularity that is provided in the reporting forms. In the cases where the “Service Area” refers to a state or county, our map portrays that where the respective end of the arc falls at the center of the town/county as per the NYS Municipal boundary map. In some cases (in and around Suffolk County, for example) that center could coincidentally lie in water. Please note the “Coming from/Going to” details as you hover over the arcs. 
+        - This tool is just a visualization of the data we were able to gather. This does not aim to inculpate or put blame on any particular facility or region for their activities.  
+        - The following table defines the final 21 material types by categorizing the numerous different types of reported materials: 
+        """
+    )
+    st.dataframe(categories)
+    st.write("""
+        - The following table shows the available data in terms of facility type, region and year: 
+        """)
+    st.dataframe(regions)
+    st.image('data/regions.jpg')
+    st.write("Thank you for using our webapp! We really hope you liked it! Feel free to check out the dark theme if you'd like, it should automatically turn on if your system already has it. If not, you can change it in the settings on the top right! :-)")
 
 
 
