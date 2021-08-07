@@ -138,7 +138,7 @@ if s_chosen:
 
                 df_landfill_filtered= df_landfills.loc[df_landfills['Material']==material_chosen]
                 map_landfill(df_landfill_filtered)
-                st.subheader("Map of Materials recycled onsite Landfills")
+                st.subheader("Map of Materials reused onsite Landfills")
                 column_map(df_landfill_filtered)
 
         if stat_view:
